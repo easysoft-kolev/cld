@@ -14,7 +14,11 @@ A one-page site for Bulstroy Group, a residential builder in Sofia (founded 2003
 
 The lighting moves through the day as you scroll, from sunrise to blue hour. The page is bilingual: Bulgarian and English, auto-detected from the browser, with a toggle.
 
-## Run locally
+## Quickest way to view
+
+Download **`bulstroy-standalone.html`** and double-click it. It is the whole site in one file and needs no server or install. Rebuild it after editing with `npm i esbuild && node tools/build-standalone.mjs`.
+
+## Run locally (development)
 
 The page uses ES modules and an import map, so open it through a web server. Opening it as `file://` will not work.
 
