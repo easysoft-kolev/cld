@@ -36,3 +36,8 @@ export function stageIndex(p) {
   for (let i = STAGES.length - 1; i >= 0; i--) if (p >= STAGES[i].from) return i;
   return 0;
 }
+
+// Building geometry shared with the renderer (render/scene.py) for the HUD read-outs.
+export const LV = [0, 4.2, 7.35, 10.5, 13.65, 16.8, 19.95, 23.1, 26.25, 29.65];
+export const STOREYS = 9;
+export const PIT_DEPTH = 4.5;

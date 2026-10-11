@@ -6,3 +6,9 @@ export const CONFIG = {
   phone: '',
   defaultLang: 'auto', // 'auto' (browser language), 'bg' or 'en'
 };
+
+// Pre-rendered construction film (see render/render.py). The single-file build inlines the frames.
+export const FRAMES = {
+  count: 180,
+  src: (i) => (window.__BSG_FRAMES ? window.__BSG_FRAMES[i] : `frames/f${String(i).padStart(4, '0')}.webp`),
+};
