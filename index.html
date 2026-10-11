@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bulstroy Group — Residential construction in Sofia since 2003</title>
+  <meta name="description" content="Bulstroy Group develops and builds residential buildings in Sofia. Founded in 2003. Watch a building rise from the first excavation to handover.">
+  <meta name="theme-color" content="#0b0c0e">
+  <meta property="og:title" content="Bulstroy Group — We build what lasts">
+  <meta property="og:description" content="Residential construction in Sofia since 2003.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap&subset=cyrillic" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three/build/three.module.min.js",
+        "three/addons/": "./vendor/three/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body class="is-loading">
+  <a class="skip" href="#about">Skip to content</a>
+
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader__mark">
+      <svg viewBox="0 0 40 40" width="40" height="40"><path d="M6 34V14l14-8 14 8v20" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14 34V20h12v14M6 34h28" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span>BULSTROY GROUP</span>
+    </div>
+    <div class="loader__bar"><i id="loaderBar"></i></div>
+    <p class="loader__label mono" data-i18n="loader">Preparing the site</p>
+  </div>
+
+  <header class="nav" id="nav">
+    <a class="brand" href="#top" aria-label="Bulstroy Group — home">
+      <svg viewBox="0 0 40 40" width="30" height="30" aria-hidden="true"><path d="M6 34V14l14-8 14 8v20" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 34V20h12v14M6 34h28" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <span class="brand__word">BULSTROY<em>GROUP</em></span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#journey" data-i18n="nav.process">Process</a>
+      <a href="#about" data-i18n="nav.about">About</a>
+      <a href="#services" data-i18n="nav.services">Services</a>
+      <a href="#projects" data-i18n="nav.projects">Projects</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
+    </nav>
+    <div class="nav__right">
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="bg">BG</button><span>/</span><button type="button" data-lang="en">EN</button>
+      </div>
+      <a class="btn btn--small" href="#contact" data-i18n="nav.cta">Get in touch</a>
+      <button class="nav__burger" type="button" aria-label="Menu" aria-expanded="false" id="burger"><i></i><i></i></button>
+    </div>
+  </header>
+
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="scrim" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <main id="top">
+    <section class="journey" id="journey" aria-label="Construction process">
+      <div class="hero" id="hero">
+        <p class="eyebrow mono" data-i18n="hero.eyebrow">Bulstroy Group · Sofia · Since 2003</p>
+        <h1 class="hero__title" data-i18n="hero.title">We build<br>what lasts.</h1>
+        <p class="hero__sub" data-i18n="hero.sub">Scroll to watch a building rise — from the first excavation to the keys in your hand.</p>
+        <div class="hero__actions">
+          <a class="btn" href="#stage-0" data-i18n="hero.btn1">Watch it rise</a>
+          <a class="btn btn--ghost" href="#projects" data-i18n="hero.btn2">Current projects</a>
+        </div>
+      </div>
+      <div class="scroll-cue" id="scrollCue" aria-hidden="true"><span class="mono" data-i18n="hero.scroll">Scroll</span><i></i></div>
+      <p class="nowebgl-note" data-i18n="nowebgl">Your browser can’t display the 3D construction sequence, so here is the process in brief.</p>
+
+      <!-- stage cards are positioned along the scroll track by js/ui.js -->
+      <article class="stage" id="stage-0" data-stage="0">
+        <p class="stage__num mono">01 <span>/ 07</span></p>
+        <h2 class="stage__title" data-i18n="stage.0.title">Survey &amp; permits</h2>
+        <p class="stage__text" data-i18n="stage.0.text"></p>
+        <ul class="stage__facts mono"><li data-i18n="stage.0.f1"></li><li data-i18n="stage.0.f2"></li><li data-i18n="stage.0.f3"></li></ul>
+      </article>
+      <article class="stage" id="stage-1" data-stage="1">
+        <p class="stage__num mono">02 <span>/ 07</span></p>
+        <h2 class="stage__title" data-i18n="stage.1.title">Excavation</h2>
+        <p class="stage__text" data-i18n="stage.1.text"></p>
+        <ul class="stage__facts mono"><li data-i18n="stage.1.f1"></li><li data-i18n="stage.1.f2"></li><li data-i18n="stage.1.f3"></li></ul>
+      </article>
+      <article class="stage" id="stage-2" data-stage="2">
+        <p class="stage__num mono">03 <span>/ 07</span></p>
+        <h2 class="stage__title" data-i18n="stage.2.title">Foundation</h2>
+        <p class="stage__text" data-i18n="stage.2.text"></p>
+        <ul class="stage__facts mono"><li data-i18n="stage.2.f1"></li><li data-i18n="stage.2.f2"></li><li data-i18n="stage.2.f3"></li></ul>
+      </article>
+      <article class="stage" id="stage-3" data-stage="3">
+        <p class="stage__num mono">04 <span>/ 07</span></p>
+        <h2 class="stage__title" data-i18n="stage.3.title">Structure</h2>
+        <p class="stage__text" data-i18n="stage.3.text"></p>
+        <ul class="stage__facts mono"><li data-i18n="stage.3.f1"></li><li data-i18n="stage.3.f2"></li><li data-i18n="stage.3.f3"></li></ul>
+      </article>
+      <article class="stage" id="stage-4" data-stage="4">
+        <p class="stage__num mono">05 <span>/ 07</span></p>
+        <h2 class="stage__title" data-i18n="stage.4.title">Envelope</h2>
+        <p class="stage__text" data-i18n="stage.4.text"></p>
+        <ul class="stage__facts mono"><li data-i18n="stage.4.f1"></li><li data-i18n="stage.4.f2"></li><li data-i18n="stage.4.f3"></li></ul>
+      </article>
+      <article class="stage" id="stage-5" data-stage="5">
+        <p class="stage__num mono">06 <span>/ 07</span></p>
+        <h2 class="stage__title" data-i18n="stage.5.title">Finishing</h2>
+        <p class="stage__text" data-i18n="stage.5.text"></p>
+        <ul class="stage__facts mono"><li data-i18n="stage.5.f1"></li><li data-i18n="stage.5.f2"></li><li data-i18n="stage.5.f3"></li></ul>
+      </article>
+      <article class="stage" id="stage-6" data-stage="6">
+        <p class="stage__num mono">07 <span>/ 07</span></p>
+        <h2 class="stage__title" data-i18n="stage.6.title">Handover</h2>
+        <p class="stage__text" data-i18n="stage.6.text"></p>
+        <ul class="stage__facts mono"><li data-i18n="stage.6.f1"></li><li data-i18n="stage.6.f2"></li><li data-i18n="stage.6.f3"></li></ul>
+      </article>
+    </section>
+
+    <section class="section about" id="about">
+      <div class="wrap">
+        <p class="eyebrow mono" data-i18n="about.eyebrow">About us</p>
+        <div class="about__grid">
+          <h2 class="section__title" data-i18n="about.title">More than two decades of building Sofia.</h2>
+          <p class="lead" data-i18n="about.text"></p>
+        </div>
+        <dl class="stats">
+          <div class="stat"><dt data-i18n="about.s1">Founded</dt><dd>2003</dd></div>
+          <div class="stat"><dt data-i18n="about.s2">Team members</dt><dd>70+</dd></div>
+          <div class="stat"><dt data-i18n="about.s3">“Building of the Year” award</dt><dd>2014</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="section services" id="services">
+      <div class="wrap">
+        <p class="eyebrow mono" data-i18n="services.eyebrow">What we do</p>
+        <h2 class="section__title" data-i18n="services.title">One team from land to keys.</h2>
+        <div class="cards">
+          <article class="card"><span class="card__n mono">01</span><h3 data-i18n="services.1.t"></h3><p data-i18n="services.1.d"></p></article>
+          <article class="card"><span class="card__n mono">02</span><h3 data-i18n="services.2.t"></h3><p data-i18n="services.2.d"></p></article>
+          <article class="card"><span class="card__n mono">03</span><h3 data-i18n="services.3.t"></h3><p data-i18n="services.3.d"></p></article>
+          <article class="card"><span class="card__n mono">04</span><h3 data-i18n="services.4.t"></h3><p data-i18n="services.4.d"></p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section projects" id="projects">
+      <div class="wrap">
+        <p class="eyebrow mono" data-i18n="projects.eyebrow">Current projects</p>
+        <h2 class="section__title" data-i18n="projects.title">Homes now selling across Sofia.</h2>
+        <div class="projects__grid">
+          <article class="project" data-project="1">
+            <div class="project__art" data-floors="8" data-variant="a"></div>
+            <div class="project__body">
+              <span class="tag mono" data-i18n="projects.status">In sales</span>
+              <h3 data-i18n="projects.1.name">Nadezhda</h3>
+              <p class="project__loc" data-i18n="projects.1.loc">Nadezhda, Sofia</p>
+              <a class="link" href="#contact" data-pick="projects.1.name"><span data-i18n="projects.cta">Request details</span> →</a>
+            </div>
+          </article>
+          <article class="project" data-project="2">
+            <div class="project__art" data-floors="6" data-variant="b"></div>
+            <div class="project__body">
+              <span class="tag mono" data-i18n="projects.status">In sales</span>
+              <h3 data-i18n="projects.2.name">Darvenitsa 5</h3>
+              <p class="project__loc" data-i18n="projects.2.loc">Darvenitsa, Sofia</p>
+              <a class="link" href="#contact" data-pick="projects.2.name"><span data-i18n="projects.cta">Request details</span> →</a>
+            </div>
+          </article>
+          <article class="project" data-project="3">
+            <div class="project__art" data-floors="10" data-variant="c"></div>
+            <div class="project__body">
+              <span class="tag mono" data-i18n="projects.status">In sales</span>
+              <h3 data-i18n="projects.3.name">Krastova Vada</h3>
+              <p class="project__loc" data-i18n="projects.3.loc">Krastova Vada, Sofia</p>
+              <a class="link" href="#contact" data-pick="projects.3.name"><span data-i18n="projects.cta">Request details</span> →</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact" id="contact">
+      <div class="wrap contact__grid">
+        <div>
+          <p class="eyebrow mono" data-i18n="contact.eyebrow">Contact</p>
+          <h2 class="section__title" data-i18n="contact.title">Let’s talk about your new home.</h2>
+          <dl class="contact__info">
+            <div><dt class="mono" data-i18n="contact.office">Office</dt><dd data-i18n="contact.address">Izgrev, Sofia, Bulgaria</dd></div>
+            <div id="rowEmail"><dt class="mono" data-i18n="contact.email">Email</dt><dd><a id="emailLink" href="#"></a></dd></div>
+            <div id="rowPhone" hidden><dt class="mono" data-i18n="contact.phone">Phone</dt><dd><a id="phoneLink" href="#"></a></dd></div>
+          </dl>
+        </div>
+        <form class="form" id="contactForm" novalidate>
+          <label><span data-i18n="form.name">Name</span><input name="name" autocomplete="name" required></label>
+          <div class="form__row">
+            <label><span data-i18n="form.phone">Phone</span><input name="phone" type="tel" autocomplete="tel"></label>
+            <label><span data-i18n="form.email">Email</span><input name="email" type="email" autocomplete="email"></label>
+          </div>
+          <label><span data-i18n="form.interest">Interested in</span>
+            <select name="interest">
+              <option value="general" data-i18n="form.general">General enquiry</option>
+              <option value="projects.1.name" data-i18n="projects.1.name">Nadezhda</option>
+              <option value="projects.2.name" data-i18n="projects.2.name">Darvenitsa 5</option>
+              <option value="projects.3.name" data-i18n="projects.3.name">Krastova Vada</option>
+            </select>
+          </label>
+          <label><span data-i18n="form.message">Message</span><textarea name="message" rows="4"></textarea></label>
+          <button class="btn" type="submit" data-i18n="form.send">Send enquiry</button>
+          <p class="form__note" id="formNote" data-i18n="form.note" aria-live="polite">Sending opens your email app with the message ready to go.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__grid">
+      <span class="brand__word">BULSTROY<em>GROUP</em></span>
+      <p data-i18n="footer.rights">© 2026 Bulstroy Group EOOD. All rights reserved.</p>
+      <p class="footer__note" data-i18n="footer.note">The 3D construction sequence is an illustrative visualisation.</p>
+    </div>
+  </footer>
+
+  <!-- fixed construction HUD, visible only while the journey is on screen -->
+  <aside class="hud" id="hud" aria-hidden="true">
+    <div class="hud__stats mono">
+      <div><span data-i18n="hud.stage">Stage</span><b id="hudStage">01 — Survey</b></div>
+      <div><span data-i18n="hud.elev">Elevation</span><b id="hudElev">±0.00 m</b></div>
+      <div><span data-i18n="hud.storeys">Storeys</span><b id="hudFloors">0 / 9</b></div>
+      <div><span data-i18n="hud.progress">Complete</span><b id="hudPct">0%</b></div>
+    </div>
+    <div class="hud__bar"><i id="hudBar"></i></div>
+  </aside>
+  <nav class="rail" id="rail" aria-label="Construction stages"></nav>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
