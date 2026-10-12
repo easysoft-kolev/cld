@@ -79,10 +79,10 @@ The live site (bulstroygroup.com) could not be reached while this was built, so 
 
 ## Preview
 
-Frames from headless Chromium (software rendering; a real GPU will look smoother):
+Frames rendered with Blender Cycles on a CPU (1280×720):
 
 | | |
 |---|---|
-| ![Hero](docs/preview/01-hero.png) | ![Excavation](docs/preview/02-excavation.png) |
-| ![Structure](docs/preview/03-structure.png) | ![Envelope](docs/preview/04-envelope.png) |
-| ![Handover](docs/preview/05-handover.png) | ![Mobile](docs/preview/06-mobile.png) |
+| ![Sunrise](docs/preview/01-sunrise.jpg) | ![Excavation](docs/preview/02-excavation.jpg) |
+| ![Foundation](docs/preview/03-foundation.jpg) | ![Structure](docs/preview/04-structure.jpg) |
+| ![Envelope](docs/preview/05-envelope.jpg) | ![Handover](docs/preview/06-handover.jpg) |
