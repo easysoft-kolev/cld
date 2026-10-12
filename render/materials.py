@@ -255,7 +255,11 @@ def city_facade(name, wall_a, wall_b, win_w=0.56, win_h=0.5, cell=(3.2, 3.1)):
     nb.link(mix_color(nb, win, wall, glass), bsdf.inputs['Base Color'])
     nb.link(map_range(nb, win, 0, 1, 0.85, 0.04), bsdf.inputs['Roughness'])
     nb.link(map_range(nb, win, 0, 1, 0.0, 0.6), bsdf.inputs['Metallic'])
-    nb.link(bump(nb, n.outputs['Fac'], 0.15, 0.02), bsdf.inputs['Normal'])
+    # recessed reveal: window mask as height gives a lit sill/head edge, plus a centre mullion line
+    mull = math_node(nb, 'LESS_THAN', math_node(nb, 'ABSOLUTE', math_node(nb, 'SUBTRACT', fu, 0.5)), 0.012)
+    depth = math_node(nb, 'SUBTRACT', math_node(nb, 'MULTIPLY', win, -1.0), math_node(nb, 'MULTIPLY', mull, -0.6))
+    h = math_node(nb, 'ADD', depth, math_node(nb, 'MULTIPLY', n.outputs['Fac'], 0.05))
+    nb.link(bump(nb, h, 1.0, 0.12), bsdf.inputs['Normal'])
     night = _night_value(nb)
     emit = math_node(nb, 'MULTIPLY', math_node(nb, 'MULTIPLY', win, lit), math_node(nb, 'MULTIPLY', night, 2.2))
     wcol = mix_color(nb, wn.outputs['Value'], (1.0, 0.6, 0.3), (1.0, 0.8, 0.55))
@@ -333,6 +337,26 @@ def plywood():
     c = mix_color(nb, w.outputs['Fac'], (0.42, 0.24, 0.1), (0.55, 0.34, 0.15))
     nb.link(c, bsdf.inputs['Base Color'])
     set_inputs(bsdf, rough=0.7)
+    return m
+
+
+def car_paint():
+    """Glossy clear-coated paint; colour picked per car instance from a realistic palette."""
+    m, nb, bsdf, out = new_material('CarPaint')
+    info = nb.node('ShaderNodeObjectInfo')
+    ramp = nb.node('ShaderNodeValToRGB')
+    nb.link(info.outputs['Random'], ramp.inputs['Fac'])
+    cr = ramp.color_ramp
+    cr.interpolation = 'CONSTANT'
+    palette = [(0.0, (0.75, 0.75, 0.74)), (0.22, (0.02, 0.02, 0.022)), (0.4, (0.32, 0.33, 0.34)), (0.55, (0.12, 0.12, 0.13)),
+               (0.68, (0.03, 0.06, 0.14)), (0.78, (0.4, 0.03, 0.02)), (0.86, (0.55, 0.52, 0.46)), (0.93, (0.06, 0.1, 0.07))]
+    cr.elements[0].position, cr.elements[0].color = palette[0][0], (*palette[0][1], 1)
+    cr.elements[1].position, cr.elements[1].color = palette[1][0], (*palette[1][1], 1)
+    for pos, col in palette[2:]:
+        e = cr.elements.new(pos)
+        e.color = (*col, 1)
+    nb.link(ramp.outputs['Color'], bsdf.inputs['Base Color'])
+    set_inputs(bsdf, rough=0.35, metal=0.5, coat=1.0, coat_rough=0.03)
     return m
 
 
@@ -443,6 +467,9 @@ def build_all():
     M['lamp'] = emissive('LampHead', (1.0, 0.72, 0.42), k=40)
     M['red_light'] = emissive('AviationLight', (1.0, 0.08, 0.02), base=(0.3, 0.02, 0.01), k=30)
     M['water'] = water()
+    M['car_paint'] = car_paint()
+    M['tail'] = simple('TailLight', (0.35, 0.02, 0.02), 0.2)
+    M['chrome_dark'] = simple('Trim', (0.03, 0.03, 0.032), 0.3, 0.6)
     M['ridge'] = simple('Ridge', (0.1, 0.11, 0.1), 0.9, noise_amt=0.5, noise_scale=0.01)
     haze = build_haze_group()
     apply_haze([m for k, m in M.items() if k not in ('glass', 'rail_glass', 'vehicle_glass', 'net', 'leaf_a', 'leaf_b')], haze)

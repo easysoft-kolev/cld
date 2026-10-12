@@ -300,6 +300,7 @@ class Scene:
                     poles.append((0.14, 0.14, 7, (lx, ly, 3.5)))
                     poles.append((0.1, 1.6, 0.1, (lx, ly + sgn * 0.75, 6.95)))
                     heads.append((0.34, 0.7, 0.1, (lx, ly + sgn * 1.45, 6.85)))
+        self.build_cars(c, r, RANGE)
         new_obj('LampPoles', merge_boxes('poles', poles), c, M['steel'])
         new_obj('LampHeads', merge_boxes('heads', heads), c, M['lamp'])
 
@@ -331,6 +332,66 @@ class Scene:
                     if any(abs(tx - cx) < w / 2 + 2.5 and abs(ty - cy) < d / 2 + 2.5 for cx, cy, w, d in self.occupied):
                         continue
                     self.place_tree(tc, tx, ty, 0.16, 0.8 + r.random() * 0.4, r.random() * 6.28, r)
+
+    def build_cars(self, c, r, RANGE):
+        """Parked cars along the kerbs: a few body styles, instanced, paint colour random per car."""
+        M = self.M
+        models = []
+        specs = [  # length, width, body profile (x along length 0..1, z), greenhouse (x0, x1, top, slope)
+            (4.5, 1.8, [(0, 0.3), (0, 0.72), (0.12, 0.8), (1, 0.82), (1, 0.3)], (0.28, 0.78, 1.42)),   # saloon
+            (4.1, 1.75, [(0, 0.3), (0, 0.75), (0.1, 0.82), (1, 0.85), (1, 0.3)], (0.3, 0.92, 1.45)),   # hatchback
+            (4.7, 1.9, [(0, 0.35), (0, 0.9), (0.12, 0.98), (1, 1.0), (1, 0.35)], (0.27, 0.9, 1.7)),    # SUV
+            (5.1, 1.95, [(0, 0.35), (0, 1.0), (0.1, 1.1), (1, 1.1), (1, 0.35)], (0.2, 0.98, 2.0)),     # van
+        ]
+        for k, (L, W, prof, (g0, g1, gtop)) in enumerate(specs):
+            coll = bpy.data.collections.new('CarModel%d' % k)
+            pts = [(x * L - L / 2, z) for x, z in prof]
+            body = new_obj('CarBody', profile_mesh('carbody', pts, W), coll, M['car_paint'])
+            bevel(body, 0.12, 3)
+            sub = body.modifiers.new('Sub', 'SUBSURF'); sub.levels = 1; sub.render_levels = 1
+            belt = max(z for _, z in prof)
+            gx0, gx1 = g0 * L - L / 2, g1 * L - L / 2
+            glass = [(gx0, belt - 0.02), (gx1, belt - 0.02), (gx1 - 0.35, gtop), (gx0 + 0.5, gtop)]
+            gh = new_obj('CarGlass', profile_mesh('carglass', glass, W - 0.16), coll, M['vehicle_glass'])
+            bevel(gh, 0.06, 2)
+            roof = new_obj('CarRoof', profile_mesh('carroof', [(gx0 + 0.5, gtop - 0.03), (gx1 - 0.35, gtop - 0.03), (gx1 - 0.37, gtop + 0.03), (gx0 + 0.52, gtop + 0.03)], W - 0.14), coll, M['car_paint'])
+            bevel(roof, 0.03, 2)
+            for wx in (-L / 2 + 0.85, L / 2 - 0.9):
+                for wy in (-W / 2 + 0.12, W / 2 - 0.12):
+                    bm = bmesh.new(); cylinder_between(bm, (wx, wy - 0.12, 0.33), (wx, wy + 0.12, 0.33), 0.33, None, 20)
+                    me = bpy.data.meshes.new('tyre'); bm.to_mesh(me); bm.free(); smooth_shade(me)
+                    new_obj('Tyre', me, coll, M['rubber'])
+                    bm = bmesh.new(); cylinder_between(bm, (wx, wy + (0.125 if wy > 0 else -0.125), 0.33), (wx, wy + (0.13 if wy > 0 else -0.13), 0.33), 0.22, None, 16)
+                    me = bpy.data.meshes.new('rim'); bm.to_mesh(me); bm.free()
+                    new_obj('Rim', me, coll, M['chrome'])
+            new_obj('Tail', box_mesh('tail', 0.04, W - 0.3, 0.12), coll, M['tail'], (-L / 2 - 0.01, 0, belt - 0.12))
+            new_obj('Head', box_mesh('head', 0.04, W - 0.4, 0.1), coll, M['lamp'], (L / 2 + 0.01, 0, belt - 0.15))
+            new_obj('Grille', box_mesh('grille', 0.04, W * 0.5, 0.18), coll, M['chrome_dark'], (L / 2 + 0.01, 0, 0.45))
+            models.append((coll, L))
+        cars = collection('Cars', c)
+        count = 0
+        for j in range(-2, 2):
+            yc = j * PITCH['y'] + PITCH['y'] / 2
+            for side in (-1, 1):
+                y = yc + side * 3.7
+                x = -RANGE * PITCH['x']
+                while x < RANGE * PITCH['x']:
+                    coll, L = models[int(r.random() ** 1.4 * len(models))]
+                    across = ((x - PITCH['x'] / 2) % PITCH['x'] + PITCH['x'] * 1.5) % PITCH['x'] - PITCH['x'] / 2
+                    gap = r.random()
+                    if abs(across) > 12 and gap > 0.22:
+                        ok = not self.blocks_view(x - L / 2, y - 1, 0, x + L / 2, y + 1, 1.8)
+                        ok = ok and all(math.hypot(a.x - x, a.y - y) > 12 for a, _ in self.lines)
+                        if ok:
+                            o = bpy.data.objects.new('Car', None)
+                            o.instance_type = 'COLLECTION'
+                            o.instance_collection = coll
+                            o.location = (x, y, 0.02)
+                            o.rotation_euler = (0, 0, (0 if side < 0 else math.pi) + (r.random() - 0.5) * 0.04)
+                            cars.objects.link(o)
+                            count += 1
+                    x += L + 0.9 + r.random() * 1.4 + (6 if gap < 0.22 else 0)
+        print(f'parked cars: {count}', flush=True)
 
     def place_tree(self, coll, x, y, z, s, rot, r):
         me = self.tree_meshes[int(r.random() * len(self.tree_meshes))]
