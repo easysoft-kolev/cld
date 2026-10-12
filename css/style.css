@@ -282,7 +282,7 @@ body.no-webgl .stage { position: relative; left: auto; top: auto !important; mar
   .nav__right .btn--small { display: none; }
   .about__grid, .contact__grid { grid-template-columns: 1fr; }
   .projects__grid { grid-template-columns: 1fr; max-width: 560px; }
-  .scrim { background: linear-gradient(180deg, rgba(8, 9, 11, 0.55) 0%, rgba(8, 9, 11, 0) 22%, rgba(8, 9, 11, 0) 50%, rgba(8, 9, 11, 0.7) 100%); }
+  .scrim { background: linear-gradient(180deg, rgba(8, 9, 11, 0.35) 0%, rgba(8, 9, 11, 0) 14%, rgba(8, 9, 11, 0) 60%, rgba(8, 9, 11, 0.5) 100%); }
   .hud { left: var(--gutter); right: var(--gutter); width: auto; top: 76px; bottom: auto; padding: 10px 14px; }
   .hud__stats { grid-template-columns: repeat(4, auto); justify-content: space-between; gap: 8px; }
   .hud__stats span { font-size: 9px; letter-spacing: 0.1em; }

@@ -54,12 +54,34 @@ export function createSequence(canvas, { count, src, onProgress }) {
     canvas.style.height = `${h}px`;
   }
 
-  function cover(img, alpha) {
-    const iw = img.naturalWidth, ih = img.naturalHeight;
-    const s = Math.max(canvas.width / iw, canvas.height / ih);
-    const dw = iw * s, dh = ih * s;
+  // tiny offscreen canvas: drawing a frame into it and scaling back up gives a cheap, portable blur
+  const blurCanvas = document.createElement('canvas');
+  const blurCtx = blurCanvas.getContext('2d');
+
+  function placement(img) {
+    const iw = img.naturalWidth, ih = img.naturalHeight, cw = canvas.width, ch = canvas.height;
+    const coverS = Math.max(cw / iw, ch / ih);
+    if (cw / ch >= 1) return { s: coverS, x: (cw - iw * coverS) / 2, y: (ch - ih * coverS) / 2, band: false };
+    // portrait: show (nearly) the full width as a band in the upper part of the screen
+    const s = Math.min(coverS, (cw * 1.35) / iw);
+    const dh = ih * s;
+    return { s, x: (cw - iw * s) / 2, y: Math.max(0, ch * 0.38 - dh / 2), band: dh < ch - 1 };
+  }
+
+  function drawImg(img, alpha) {
+    const pl = placement(img);
     ctx.globalAlpha = alpha;
-    ctx.drawImage(img, (canvas.width - dw) / 2, (canvas.height - dh) / 2, dw, dh);
+    if (pl.band) {
+      const bw = 48, bh = Math.max(1, Math.round((bw * canvas.height) / canvas.width));
+      if (blurCanvas.width !== bw || blurCanvas.height !== bh) { blurCanvas.width = bw; blurCanvas.height = bh; }
+      const cs = Math.max(bw / img.naturalWidth, bh / img.naturalHeight);
+      blurCtx.drawImage(img, (bw - img.naturalWidth * cs) / 2, (bh - img.naturalHeight * cs) / 2, img.naturalWidth * cs, img.naturalHeight * cs);
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(blurCanvas, 0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'rgba(8,9,11,0.45)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    ctx.drawImage(img, pl.x, pl.y, img.naturalWidth * pl.s, img.naturalHeight * pl.s);
   }
 
   /** Draw progress p in 0..1. */
@@ -70,10 +92,13 @@ export function createSequence(canvas, { count, src, onProgress }) {
     if (a < 0 && b < 0) return false;
     if (a < 0) a = b;
     if (b < 0) b = a;
-    const t = a === b ? 0 : (f - a) / (b - a);
+    let t = a === b ? 0 : (f - a) / (b - a);
+    // hold each frame sharp for most of its slice and blend only around the midpoint
+    t = Math.min(1, Math.max(0, (t - 0.3) / 0.4));
+    t = t * t * (3 - 2 * t);
     ctx.imageSmoothingQuality = 'high';
-    cover(frames[a], 1);
-    if (t > 0.001) cover(frames[b], t);
+    drawImg(frames[a], 1);
+    if (t > 0.001) drawImg(frames[b], t);
     ctx.globalAlpha = 1;
     return true;
   }
