@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<title>TRACE render</title>
+<link rel="stylesheet" href="node_modules/@fontsource/unbounded/600.css">
+<link rel="stylesheet" href="node_modules/@fontsource/unbounded/700.css">
+<link rel="stylesheet" href="node_modules/@fontsource/unbounded/800.css">
+<link rel="stylesheet" href="node_modules/@fontsource/onest/400.css">
+<link rel="stylesheet" href="node_modules/@fontsource/onest/500.css">
+<link rel="stylesheet" href="node_modules/@fontsource/onest/600.css">
+<link rel="stylesheet" href="node_modules/@fontsource/onest/700.css">
+<link rel="stylesheet" href="node_modules/@fontsource/jetbrains-mono/400.css">
+<link rel="stylesheet" href="node_modules/@fontsource/jetbrains-mono/500.css">
+<link rel="stylesheet" href="node_modules/@fontsource/caveat/500.css">
+<link rel="stylesheet" href="node_modules/@fontsource/caveat/700.css">
+<style>
+body{margin:0;background:#141312}
+.U{font-family:'Unbounded',sans-serif}.M{font-family:'JetBrains Mono',monospace}
+.grid{background-image:linear-gradient(to right,rgba(242,240,238,.04) 1px,transparent 1px),linear-gradient(to bottom,rgba(242,240,238,.04) 1px,transparent 1px);background-size:90px 90px}
+.ruled{background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 71px,rgba(43,58,103,.22) 71px,rgba(43,58,103,.22) 73px)}
+@keyframes rise{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:none}}
+.rise{animation:rise .7s cubic-bezier(.2,.7,.1,1) both}
+@keyframes drop{from{opacity:0;transform:translateY(-160px) rotate(-16deg) scale(1.12)}to{opacity:1;transform:rotate(-5deg)}}
+.paper{animation:drop .8s cubic-bezier(.2,.7,.1,1) both}
+@keyframes strike{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.strike{transform-origin:left center;animation:strike .45s cubic-bezier(.6,0,.3,1) both}
+@keyframes pop{0%{opacity:0;transform:scale(.6)}70%{opacity:1;transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
+.pop{animation:pop .45s cubic-bezier(.2,.7,.1,1) both}
+@keyframes caret{50%{opacity:0}}
+.caret{animation:caret .8s steps(1) infinite}
+@keyframes tap{from{opacity:.9;transform:scale(.4)}to{opacity:0;transform:scale(2.4)}}
+.tap{animation:tap .6s ease-out both}
+@keyframes flash{0%{background:rgba(255,74,43,.40)}100%{background:rgba(255,74,43,.10)}}
+.flash{animation:flash 1.4s ease-out both}
+@keyframes slideL{from{opacity:0;transform:translateX(90px)}to{opacity:1;transform:none}}
+.slideL{animation:slideL .55s cubic-bezier(.2,.7,.1,1) both}
+@keyframes scan{from{transform:translateY(-40px)}to{transform:translateY(1960px)}}
+.scan{animation:scan 1.6s cubic-bezier(.6,0,.4,1) both}
+@keyframes letter{from{opacity:0;transform:translateY(140px)}to{opacity:1;transform:none}}
+.letter{display:inline-block;animation:letter .6s cubic-bezier(.2,.7,.1,1) both}
+@keyframes zoomIn{from{opacity:0;transform:scale(1.18)}to{opacity:1;transform:none}}
+.zoomIn{animation:zoomIn .7s cubic-bezier(.2,.7,.1,1) both}
+@keyframes blinkSq{0%,60%{opacity:1}61%,100%{opacity:.2}}
+.sq{animation:blinkSq 1.6s steps(1,end) infinite}
+@keyframes phoneIn{from{opacity:0;transform:translateY(140px) scale(.94)}to{opacity:1;transform:none}}
+.phoneIn{animation:phoneIn .8s cubic-bezier(.2,.7,.1,1) both}
+@keyframes toast{0%{opacity:0;transform:translateY(40px)}20%{opacity:1;transform:none}100%{opacity:1;transform:none}}
+.toast{animation:toast .9s cubic-bezier(.2,.7,.1,1) both}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.fade{animation:fade .5s ease both}
+@keyframes sceneIn{from{opacity:0}to{opacity:1}}
+.sceneIn{animation:sceneIn .25s ease both}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#6B645F}
+.fld{height:64px;box-sizing:border-box;padding:0 18px;display:flex;align-items:center;border-radius:14px;background:#fff;font-size:26px;font-weight:500}
+.chip{padding:10px 16px;border-radius:22px;background:#141312;color:#F2F0EE;font-size:20px;font-weight:500}
+.x{flex:none;width:76px;height:76px;border-radius:38px;background:rgba(255,74,43,.14);display:grid;place-items:center;color:#FF4A2B}
+.pain{display:flex;align-items:center;gap:32px;padding:34px 0;border-top:1px solid rgba(242,240,238,.18)}
+.card{padding:34px 32px;border-radius:24px;border:1px solid rgba(242,240,238,.22);background:rgba(35,33,32,.9);display:flex;flex-direction:column;gap:10px}
+.row{padding:20px;border-radius:16px;background:#fff;display:flex;flex-direction:column;gap:6px}
+</style>
+</head>
+<body>
+<div id="stage" class="grid" style="width:1080px;height:1920px;position:relative;overflow:hidden;background-color:#141312;color:#F2F0EE;font-family:'Onest',sans-serif"></div>
+<script>
+const A = '#FF4A2B';
+const SC = [['hook',0,3000],['pain',3000,8500],['reveal',8500,10500],['app',10500,23000],['custom',23000,28000],['cta',28000,32000]];
+const CAPS = [
+  [0,3000,'Още пишете пътни листи на ръка?'],
+  [3000,8500,'Имаш логистична фирма или работиш в такава? Изгубени листи, грешни километри, часове в Excel.'],
+  [8500,10500,'Запознай се с TRACE.'],
+  [10500,13700,'Шофьорът избира себе си и колата – с едно докосване.'],
+  [13700,16900,'Маршрутът и обектите се отбелязват в движение.'],
+  [16900,19900,'Въвежда километрите, а TRACE смята пробега сам.'],
+  [19900,23000,'Всеки курс влиза в отчета веднага. Без хартия. Без грешки.'],
+  [23000,28000,'TRACE е твоето решение – изцяло направено и персонализирано според клиента.'],
+  [28000,32000,'TRACE от easysoft. Поискай демо още днес.']];
+const X = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+const CHECK = (w,sw) => `<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
+const typed = (s, st, t, cps) => t < st ? '' : s.slice(0, Math.min(Math.floor((t - st) / 1000 * cps), s.length));
+const typing = (s, st, t, cps) => t >= st && t < st + s.length / cps * 1000 + 250;
+const clamp = x => Math.max(0, Math.min(1, x));
+const caret = on => on ? `<span class="caret" style="color:${A}">|</span>` : '';
+
+function hook() { return `
+<div class="paper ruled" style="position:absolute;left:150px;top:230px;width:780px;height:720px;box-sizing:border-box;padding:56px 64px;background-color:#EFE8D8;border-radius:6px;box-shadow:0 50px 90px -30px rgba(0,0,0,.7);font-family:'Caveat',cursive;color:#2B3A67;font-size:54px;line-height:73px">
+<div style="font-weight:700;font-size:62px;letter-spacing:.02em">ПЪТЕН ЛИСТ № 047</div>
+<div>Шофьор: Ив. Петров</div><div>Рег. №: СВ 48?1 КН</div>
+<div style="position:relative">Км начало: 124 35_ <span style="color:#b0473a">??</span><span class="strike" style="position:absolute;left:-12px;right:40px;top:36px;height:10px;background:${A};border-radius:5px;animation-delay:1.4s"></span></div>
+<div style="position:relative">Км край: 124 6__<span class="strike" style="position:absolute;left:-12px;right:120px;top:36px;height:10px;background:${A};border-radius:5px;animation-delay:1.65s"></span></div>
+<div>Обекти: Склад, Пловд…</div>
+<div class="U" style="position:absolute;right:40px;bottom:34px;transform:rotate(-9deg);border:4px solid #b0473a;color:#b0473a;font-weight:700;font-size:26px;line-height:1;padding:12px 16px;border-radius:6px;opacity:.85">ЛИПСВА ПОДПИС</div>
+</div>
+<div class="U" style="position:absolute;left:64px;right:64px;top:1020px;font-weight:700;font-size:112px;line-height:1.04;letter-spacing:-.045em">
+<div class="rise" style="animation-delay:.25s">Още пишете</div><div class="rise" style="animation-delay:.45s">пътни листи</div><div class="rise" style="animation-delay:.65s;color:${A}">на ръка?</div>
+</div>`; }
+
+function pain(t) {
+  const txt = 'Имаш логистична фирма или работиш в такава?';
+  const h = typed(txt, 3200, t, 26);
+  const row = (d, s, last) => `<div class="pain slideL" style="animation-delay:${d}s${last ? ';border-bottom:1px solid rgba(242,240,238,.18)' : ''}"><span class="x">${X}</span><span style="font-size:58px;font-weight:600;letter-spacing:-.02em">${s}</span></div>`;
+  return `
+<div class="fade M" style="position:absolute;left:64px;top:220px;display:flex;align-items:center;gap:14px;font-size:24px;letter-spacing:.1em;text-transform:uppercase;color:#A39D99"><span style="width:40px;height:3px;background:${A}"></span>За логистични фирми</div>
+<div class="U" style="position:absolute;left:64px;right:64px;top:290px;font-weight:700;font-size:88px;line-height:1.08;letter-spacing:-.04em">${h}${caret(t >= 3200 && h.length < txt.length)}</div>
+<div style="position:absolute;left:64px;right:64px;top:800px;display:flex;flex-direction:column">${row(2.0,'Изгубени листи')}${row(2.7,'Грешни километри')}${row(3.4,'Часове в Excel',1)}</div>`; }
+
+function reveal() { return `
+<div class="scan" style="position:absolute;left:0;right:0;top:0;height:4px;background:${A};box-shadow:0 0 40px 8px rgba(255,74,43,.55)"></div>
+<div style="position:absolute;left:0;right:0;top:560px;display:flex;flex-direction:column;align-items:center;gap:36px">
+<div class="fade M" style="font-size:26px;letter-spacing:.14em;text-transform:uppercase;color:#A39D99;animation-delay:.1s">Запознай се с</div>
+<div class="U" style="display:flex;align-items:baseline;gap:20px;font-weight:800;font-size:236px;line-height:1;letter-spacing:-.06em">
+${'TRACE'.split('').map((c, i) => `<span class="letter" style="animation-delay:${(.15 + i * .08).toFixed(2)}s">${c}</span>`).join('')}
+<span class="pop" style="width:70px;height:70px;background:${A};display:block;animation-delay:.6s"></span></div>
+<div class="rise M" style="animation-delay:.8s;font-size:28px;letter-spacing:.12em;text-transform:uppercase;color:#FF9783">Fleet management · by easysoft</div>
+</div>`; }
+
+function app(t) {
+  const r = t - 10500;
+  const D = 'Иван Петров', P = 'СВ 4821 КН', R = 'София → Пловдив', KS = '124 350', KE = '124 600';
+  const line = '2px solid #D9D3CD', on = '2px solid ' + A;
+  const cD = typing(D, 400, r, 14), cP = typing(P, 1700, r, 12), cR = typing(R, 3500, r, 14), cKs = typing(KS, 6800, r, 10), cKe = typing(KE, 7900, r, 10);
+  const mp = clamp((r - 8700) / 700);
+  const step = r < 3200 ? ['01','Шофьор и кола'] : r < 6400 ? ['02','Маршрут и обекти'] : r < 9400 ? ['03','Километри'] : ['04','Готов отчет'];
+  const showList = r >= 10700;
+  const fld = (l, v, c, mono) => `<div style="display:flex;flex-direction:column;gap:6px"><span class="lbl">${l}</span><div class="fld${mono ? ' M' : ''}" style="border:${c ? on : line}">${v}${caret(c)}</div></div>`;
+  const chip = (s, at) => r >= at ? `<span class="chip pop" data-t0="${10500 + at}">${s}</span>` : '';
+  let screen;
+  if (!showList) {
+    screen = `<div style="padding:22px 32px 0;display:flex;flex-direction:column;gap:16px">
+${fld('Шофьор', typed(D, 400, r, 14), cD)}${fld('Рег. №', typed(P, 1700, r, 12), cP, 1)}${fld('Маршрут', typed(R, 3500, r, 14), cR)}
+<div style="display:flex;flex-direction:column;gap:8px"><span class="lbl">Обекти</span><div style="min-height:52px;display:flex;flex-wrap:wrap;gap:8px">${chip('Склад София',4700)}${chip('Обект Пловдив',5200)}${chip('Обект Асеновград',5700)}</div></div>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px">${fld('Км начало', typed(KS, 6800, r, 10), cKs, 1)}${fld('Км край', typed(KE, 7900, r, 10), cKe, 1)}</div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-radius:16px;background:#E8E2DC"><span class="lbl" style="color:#5E5853">Пробег · авто</span><span class="U" style="font-weight:700;font-size:40px;letter-spacing:-.03em;color:${mp >= 1 ? '#141312' : '#8A837D'}">${Math.round(250 * mp)} км</span></div>
+<div style="position:relative;height:80px;border-radius:18px;background:${A};color:#141312;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;transform:${r >= 9700 && r < 9900 ? 'scale(.96)' : 'none'}">Запиши курс${r >= 9700 && r < 10300 ? `<span class="tap" data-t0="${10500 + 9700}" style="position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:60px;border:4px solid #141312"></span>` : ''}</div>
+</div>
+${r >= 9950 ? `<div class="toast" data-t0="${10500 + 9950}" style="position:absolute;left:32px;right:32px;bottom:40px;padding:22px 24px;border-radius:18px;background:#141312;color:#F2F0EE;display:flex;align-items:center;gap:16px;font-size:24px;font-weight:600"><span style="flex:none;width:44px;height:44px;border-radius:22px;background:${A};color:#141312;display:grid;place-items:center">${CHECK(24,3)}</span>Курсът е записан</div>` : ''}`;
+  } else {
+    const row = (cls, d, n, km, sub, meta, extra) => `<div class="${cls}" style="animation-delay:${d}s;${extra}"><div style="display:flex;justify-content:space-between"><span style="font-size:22px;font-weight:700">${n}</span><span class="U" style="font-weight:700;font-size:22px">${km}</span></div><span class="M" style="font-size:17px;color:#4F4945">${sub}</span><span style="font-size:17px;color:#4F4945">${meta}</span></div>`;
+    screen = `<div class="fade" data-t0="${10500 + 10700}" style="padding:26px 28px 0;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="U" style="font-weight:700;font-size:30px;letter-spacing:-.03em">Курсове</span><span class="M" style="font-size:16px;color:#6B645F">ДНЕС · 19.10</span></div>
+${row('flash', 0, 'Иван Петров', '250 км', 'СВ 4821 КН · София → Пловдив', '3 обекта · 08:42', `padding:20px;border-radius:16px;border:2px solid ${A};display:flex;flex-direction:column;gap:6px`)}
+${row('row slideL', .25, 'Георги Димов', '233 км', 'СВ 7712 ВК · Регион Север', '1 обект · 07:15', '')}
+${row('row slideL', .4, 'Мария Стоянова', '118 км', 'СВ 3390 ТН · Град София', '6 обекта · 06:50', '')}
+<div class="rise" style="animation-delay:.7s;margin-top:6px;padding:22px;border-radius:16px;background:#141312;color:#F2F0EE;display:flex;justify-content:space-between;align-items:center"><span class="M" style="font-size:16px;letter-spacing:.08em;text-transform:uppercase;color:#C9C4C0">Общо днес</span><span class="U" style="font-weight:700;font-size:34px;color:#FF9783">601 км</span></div>
+<div class="fade" style="animation-delay:1s;display:flex;align-items:center;gap:10px;font-size:18px;color:#4F4945">${CHECK(20,2.4)}Отчетът е обновен автоматично</div>
+</div>`;
+  }
+  return `
+<div style="position:absolute;left:64px;right:64px;top:168px;display:flex;align-items:baseline;gap:26px"><span class="M" style="font-size:30px;color:${A};letter-spacing:.06em">${step[0]} / 04</span><span class="U" style="font-weight:700;font-size:60px;letter-spacing:-.035em">${step[1]}</span></div>
+<div class="phoneIn" style="position:absolute;left:270px;top:300px;width:540px;height:1080px;box-sizing:border-box;padding:14px;border-radius:68px;background:#2A2725;box-shadow:0 80px 140px -40px rgba(255,74,43,.35),inset 0 0 0 2px rgba(242,240,238,.12)">
+<div style="position:relative;width:100%;height:100%;border-radius:56px;overflow:hidden;background:#F2F0EE;color:#141312">
+<div style="height:120px;box-sizing:border-box;padding:48px 32px 0;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #DDD7D1"><span class="U" style="display:flex;align-items:baseline;gap:6px;font-weight:800;font-size:30px;letter-spacing:-.04em">TRACE<span style="width:10px;height:10px;background:${A};display:block"></span></span><span style="font-size:20px;font-weight:600;color:#5E5853">${showList ? 'Отчет' : 'Нов курс'}</span></div>
+${screen}
+</div></div>`; }
+
+function custom() {
+  const card = (d, n, s) => `<div class="card pop" style="animation-delay:${d}s"><span class="M" style="font-size:22px;color:${A}">${n}</span><span style="font-size:44px;font-weight:600;letter-spacing:-.02em">${s}</span></div>`;
+  return `
+<div class="U" style="position:absolute;left:64px;right:64px;top:230px;font-weight:700;font-size:96px;line-height:1.06;letter-spacing:-.045em">
+<div class="rise" style="animation-delay:.1s">Изцяло</div><div class="rise" style="animation-delay:.25s">направено</div><div class="rise" style="animation-delay:.4s">според <span style="color:${A}">твоята</span></div><div class="rise" style="animation-delay:.55s">фирма.</div></div>
+<div style="position:absolute;left:64px;right:64px;top:780px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px">${card(1.2,'01','Твоите маршрути')}${card(1.5,'02','Твоите обекти')}${card(1.8,'03','Твоите шофьори')}${card(2.1,'04','Твоите отчети')}</div>
+<div class="rise" style="animation-delay:2.8s;position:absolute;left:64px;right:64px;top:1190px;font-size:50px;font-weight:600;color:#FF9783;letter-spacing:-.02em">Не шаблон. Твоето решение.</div>`; }
+
+function cta() { return `
+<div style="position:absolute;left:0;right:0;top:470px;display:flex;flex-direction:column;align-items:center;gap:30px">
+<div class="zoomIn U" style="display:flex;align-items:baseline;gap:16px;font-weight:800;font-size:200px;line-height:1;letter-spacing:-.06em">TRACE<span class="sq" style="width:58px;height:58px;background:${A};display:block"></span></div>
+<div class="fade M" style="animation-delay:.4s;font-size:28px;letter-spacing:.14em;text-transform:uppercase;color:#A39D99">от easysoft</div>
+<div class="rise U" style="animation-delay:.8s;margin-top:60px;height:120px;padding:0 64px;border-radius:60px;background:${A};color:#141312;display:flex;align-items:center;gap:22px;font-weight:700;font-size:46px;letter-spacing:-.02em">Поискай демо<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+<div class="fade" style="animation-delay:1.2s;margin-top:18px;font-size:38px;font-weight:500;color:#F2F0EE">${window.CONTACT || '[телефон · имейл · сайт]'}</div>
+</div>`; }
+
+const FN = { hook, pain, reveal, app, custom, cta };
+window.renderAt = function (t) {
+  const sc = SC.find(s => t >= s[1] && t < s[2]) || SC[SC.length - 1];
+  const cap = (CAPS.find(c => t >= c[0] && t < c[1]) || CAPS[CAPS.length - 1])[2];
+  const stage = document.getElementById('stage');
+  stage.innerHTML = `<div data-t0="${sc[1]}" style="position:absolute;inset:0">${FN[sc[0]](t)}</div>
+<div style="position:absolute;left:64px;right:170px;top:1430px;z-index:20"><span style="display:inline;padding:10px 18px;line-height:1.6;font-size:42px;font-weight:600;color:#F2F0EE;background:rgba(13,12,11,.86);box-decoration-break:clone;-webkit-box-decoration-break:clone;border-radius:12px">${cap}</span></div>`;
+  // Drive every CSS animation from the frame clock: each one starts when its nearest data-t0 container mounted
+  for (const an of document.getAnimations()) {
+    const el = an.effect && an.effect.target;
+    const host = el && el.closest('[data-t0]');
+    const t0 = host ? +host.dataset.t0 : sc[1];
+    an.pause();
+    an.currentTime = Math.max(0, t - t0);
+  }
+};
+</script>
+</body>
+</html>
