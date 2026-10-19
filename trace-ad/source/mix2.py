@@ -1,6 +1,6 @@
 import sys, numpy as np, soundfile as sf
 vo_dir, out = sys.argv[1], sys.argv[2]
-SR, DUR = 44100, 32.0
+SR, DUR = 44100, 42.2
 N = int(SR * DUR)
 rng = np.random.default_rng(7)
 def place(buf, sig, t):
@@ -15,7 +15,7 @@ def lp(x, k):  # cheap one-pole lowpass, k in (0,1)
     return y
 
 # ---- voice
-offs = [0.25, 2.85, 8.75, 10.55, 13.75, 16.95, 19.95, 23.25, 28.1]
+offs = [0.3, 3.1, 10.25, 12.4, 17.0, 21.0, 23.8, 27.0, 33.5, 38.5]
 voice = np.zeros(N); spans = []
 for i, t in enumerate(offs):
     s, sr = sf.read(f"{vo_dir}/p{i}.wav"); s = s if s.ndim == 1 else s.mean(1)
@@ -42,17 +42,17 @@ cn = int(0.18 * SR); clap_s = rng.standard_normal(cn) * np.exp(-np.arange(cn) / 
 nb = int(DUR / beat) + 1
 for k in range(nb):
     t = k * beat
-    if t >= 8.75:  # drop on the TRACE reveal
+    if t >= 9.8:  # drop on the TRACE reveal
         place(kick, kick_s, t)
         if k % 2 == 1: place(clap, lp(clap_s, 0.35), t)
     place(hat, hat_s, t + beat / 2)
-    if t >= 8.75: place(hat, hat_s * 0.6, t + beat * 0.25); place(hat, hat_s * 0.6, t + beat * 0.75)
+    if t >= 9.8: place(hat, hat_s * 0.6, t + beat * 0.25); place(hat, hat_s * 0.6, t + beat * 0.75)
 # riser before the drop
 rn = int(2.2 * SR); tr = np.arange(rn) / SR
 riser = rng.standard_normal(rn) * (tr / tr[-1]) ** 2 * 0.25
-place(pad, lp(riser, 0.25), 8.75 - 2.2)
+place(pad, lp(riser, 0.25), 9.8 - 2.2)
 music = pad * 0.22 + lp(bass, 0.08) * 0.9 + kick * 0.8 + hat * 0.35 + clap * 0.35
-intro = np.ones(N); intro[: int(8.75 * SR)] = 0.75
+intro = np.ones(N); intro[: int(9.8 * SR)] = 0.75
 music *= intro
 
 # ---- SFX
@@ -75,11 +75,14 @@ def swish(t):
 paper(0.0); swish(1.4); swish(1.65)
 def typing(start, nchars, cps):
     for i in range(nchars): click(start + i / cps + rng.uniform(-0.01, 0.01), 0.14 + rng.uniform(0, 0.06))
-typing(3.2, 43, 26); typing(10.9, 11, 14); typing(12.2, 10, 12); typing(14.0, 15, 14); typing(17.3, 7, 10); typing(18.4, 7, 10)
-for t in (15.2, 15.7, 16.2): pop(t)
-whoosh(8.2); whoosh(10.3, 0.6); whoosh(22.9, 0.7); whoosh(27.8, 0.8)
-click(20.2, 0.6, 200); pop(20.45)
-
+typing(3.2, 43, 26)
+A = 12.0  # app recording offset: taps and keystrokes from record_app.js
+for t in (1.52, 2.12, 2.92, 3.72, 5.02, 5.79, 6.52, 7.29, 7.72, 8.49, 9.72, 10.32, 10.92, 12.42, 13.42, 15.62):
+    click(A + t, 0.45, 260)
+typing(A + 2.14, 4, 9.1); typing(A + 2.94, 4, 9.1); typing(A + 12.44, 6, 11.8); typing(A + 13.44, 6, 11.8)
+for t in (9.72, 10.32, 10.92): pop(A + t + 0.03)
+pop(A + 16.3); pop(A + 16.42)
+whoosh(9.6); whoosh(11.8, 0.6); whoosh(33.0, 0.7); whoosh(38.0, 0.8)
 # ---- ducking under the voice
 duck = np.ones(N)
 for a, b in spans:

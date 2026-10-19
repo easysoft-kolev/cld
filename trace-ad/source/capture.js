@@ -4,11 +4,12 @@ const { spawn } = require('child_process');
 const path = require('path');
 (async () => {
   const [html, out, fpsArg, flag, list] = process.argv.slice(2);
-  const fps = +fpsArg || 30, DUR = 32000;
+  const fps = +fpsArg || 30;
   const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
   await page.goto('file://' + path.resolve(html));
-  for (const t of [0, 4000, 9000, 15000, 22000, 25000, 30000]) await page.evaluate(t => window.renderAt(t), t);
+  const DUR = await page.evaluate(() => window.DUR || 32000);
+  for (let t = 0; t < DUR; t += 2000) await page.evaluate(t => window.renderAt(t), t);
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(500);
   const stage = page.locator('#stage');
