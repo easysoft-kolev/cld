@@ -21,9 +21,10 @@ const path = require('path');
   } else {
     const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(fps), '-i', '-',
       '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', out], { stdio: ['pipe', 'inherit', 'inherit'] });
-    const N = Math.round(DUR / 1000 * fps);
+    const START = +(process.env.START || 0), END = +(process.env.END || DUR);
+    const N = Math.round((END - START) / 1000 * fps);
     for (let i = 0; i < N; i++) {
-      await page.evaluate(t => window.renderAt(t), i * 1000 / fps);
+      await page.evaluate(t => window.renderAt(t), START + i * 1000 / fps);
       const buf = await stage.screenshot({ type: 'jpeg', quality: 95 });
       if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once('drain', r));
       if (i % 120 === 0) console.log('frame', i, '/', N);
